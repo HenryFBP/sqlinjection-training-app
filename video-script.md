@@ -46,9 +46,9 @@ Here, we have a simple login page. Let's try putting in 'a' for the username and
 
 > Put in `a` for username, `b` for password. Submit.
 
-You can see that the resulting query looks like a pretty simple SQL statement.
+You can see that the resulting query looks like a pretty simple SQL statement. 
 
-But what if we try to escape the closing single quote after 'a'?
+It looks like our username is inserted directly in-between two single quote characters. What if we try to modify the query after our username?
 
 > Put in [ `a' OR 1=1 -- ` ] for a username. The ending space is important.
 
@@ -61,7 +61,7 @@ But what if we try to escape the closing single quote after 'a'?
     SELECT * FROM users where username='[a' OR 1=1 -- ]' AND password = '098f6bcd4621d373cade4e832627b4f6'
 
 
-We're logged in! But we didn't give a valid password.
+Our attack was successful. We're logged in, even though we didn't give a valid password.
 
 You can see that the payload is sandwiched between two single quotes.
 
@@ -125,9 +125,11 @@ But this is not the case.
 
 To summarize, with parameterized queries, user data is not put into the SQL code. Blocklists, allowlists, or encoding are not used, but the data is sent separately from the SQL code.
 
-## Attack 2: login2.php
+## Attack 2 - Slightly different: login2.php
 
 Now that we have a basic understanding of SQL injection, let's look at a slightly modified query that defends against our original attack, but offers no defense other than that.
+
+This is another very simple SQL injection attack and can show you how SQLi attacks are built. 
 
 > Navigate to <http://localhost:8000/login2.php?debug=true>.
 
@@ -163,3 +165,4 @@ However, it is extremely easy to beat this new query. We only have to add a clos
 > Submit again and enjoy being logged in.
 
 As in the previous example, the best way to fix this is not to ban parentheses or single quote characters, but to use parameterized queries.
+
