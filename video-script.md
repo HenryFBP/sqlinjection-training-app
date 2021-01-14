@@ -180,3 +180,47 @@ However, it is extremely easy to beat this new query. We only have to add a clos
 
 As in the previous example, the best way to fix this is not to ban parentheses or single quote characters, but to use parameterized queries.
 
+## Attack 3 - Verbose SQL Error based Injection
+
+This last attack details what could happen if your application is configured to display error messages to your users.
+
+The previous 2 attacks allowed us to log ourselves in, but that's about it. What if we actually wanted to retrieve data from the database?
+
+Suppose you're an attacker
+
+> Navigate to <http://localhost:8000/login1.php>. Not in debug mode.
+
+This payload:
+
+    ' or 1 in (select password from users where username = 'admin') -- //
+
+Which results in the server running this SQL code:
+
+    SELECT * FROM users WHERE username='' or 1 in (select password from users where username = 'admin') -- //' AND password = '0cc175b9c0f1b6a831c399e269772661'
+
+Selects a password hash, which is a String type, from the database, and attempts to compare it to an integer. This produces an error, and that error message contains the data being compared. If your application displays errors to users, this could allow the password hash to be shown to an attacker.
+
+So, let's run it and see what happens.
+
+> Put in [ `' or 1 in (select password from users where username = 'admin') -- //` ] for the username and `b` for the password. Submit.
+
+Looks like a password hash is echoed back to the user! As an attacker, we could now try to crack this and get the password back.
+
+The defense against this specific vulnerability could be one of two defenses:
+
+1. Using parameterized queries would prevent this from occurring in the first place, but
+2. Not showing verbose error messages would have also prevented this specific vulnerability.
+
+## Summary
+
+In summary, the only reliable way to defend against SQL injection is to use parameterized queries or prepared statements.
+
+You can use blocklists/allowlists, but there is always the chance that you've missed something, and that one well-crafted input could slip through.
+
+All of these resources are available online, including this video's script, at the link shown on screen.
+
+<https://github.com/HenryFBP/sqlinjection-training-app/>
+
+I want to say thanks to the original repository creators, AppSecCo, for putting this source code on GitHub. Their GitHub page is on-screen as well.
+
+<https://github.com/appsecco/>
