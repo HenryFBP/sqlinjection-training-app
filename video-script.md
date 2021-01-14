@@ -17,6 +17,7 @@ sudo docker-compose up -d
 sudo docker-compose ps
 curl http://localhost:8000/resetdb.php
 curl http://localhost:8000
+xdg-open http://localhost:8000
 ```
 
 > Get the prerequisites ready. 
@@ -45,13 +46,20 @@ But what if we try to escape the closing single quote after 'a'?
 
 > Put in [`a' OR 1=1 -- `] for a username. The ending space is important.
 
-> Highlight the payload in the query.
+> Highlight the payload in the query, 
+
+    SELECT * FROM users where username='a' OR 1=1 -- ' AND password = '098f6bcd4621d373cade4e832627b4f6'
+
+    SELECT * FROM users where username='[a' OR 1=1 -- ]' AND password = '098f6bcd4621d373cade4e832627b4f6'
+
 
 We're logged in! But we didn't give a valid password.
 
 You can see that the payload is sandwiched between two single quotes.
 
-By injecting one single quote into our username, we were able to insert SQL code into the query and modify it to our advantage. More specifically, we get logged in, because our attack causes the ResultSet obtained from the query to contain all rows in the database.
+By injecting one single quote into our username, we were able to insert SQL code into the query and modify it to our advantage.
+
+More specifically, we get logged in, because our attack causes the ResultSet obtained from the query to contain all rows in the database. The "AND" clause is removed by the double-hypen, and replaced with an "OR" clause that always evaluates to true, `1=1`.
 
 To understand why this happens, we must look at the code.
 
