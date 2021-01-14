@@ -49,7 +49,9 @@ ini_set('display_errors', 1);
           <p>This page can be used to create users that will be used throughout the application.</p>
 		
           <h4><a href="login1.php" style="color:#B31D14">login1.php - basic injection page</a></h4>
+          <h4><a href="login1-fixed.php" style="color:green">login1-fixed.php - Fixed version of login1.php</a></h4>
           <p>This page contains the most simplistic form of SQL injection flaw. Verbose errors, can be used to enumerate columns and bypass user authentication altogether</p>
+
 
 		  <h4><a href="login2.php" style="color:#B31D14">login2.php - basic injection page with brackets</a></h4>
           <p>This page contains the most simplistic form of SQL injection flaw. Verbose errors, can be used to enumerate columns and bypass user authentication altogether. Backend query uses brackets to enclose variables. Very common on the Internet.</p>
