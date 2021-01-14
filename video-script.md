@@ -153,7 +153,12 @@ The closing paren is AFTER the comment, (dash-dash), and gets ignored by the SQL
 
 However, it is extremely easy to beat this new query. We only have to add a closing paren directly before the comment begins.
 
-> Update the payload so it looks like this: [`a' OR 1=1) -- `]. Note the ending space is required.
+> Update the payload to the new version: 
+
+    New:   a' OR 1=1) -- 
+    Old:   a' OR 1=1  --  
+
+> Note an ending space is required after the comment.
 
 > Submit again and enjoy being logged in.
 
