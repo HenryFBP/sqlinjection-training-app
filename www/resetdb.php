@@ -19,5 +19,3 @@ if ($mysqli->multi_query($sql)) {
 } else {
    echo "DB was not reset! Check logs to see what happened :(";
 }
-
-?>

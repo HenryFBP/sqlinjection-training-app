@@ -106,6 +106,8 @@ ini_set('display_errors', 1);
 							$_SESSION["name"] = $row[3];
 							//ob_clean();
 
+							echo "Welcome, ".$_SESSION['name']."! You are logged in!";
+
 							if ($_SESSION['next'] == "searchproducts.php") {
 								header('Location: searchproducts.php');
 							} elseif ($_SESSION['next'] == "blindsqli.php") {
