@@ -1,24 +1,30 @@
+# Video Script
+
 Adapted from <https://github.com/appsecco/sqlinjection-training-app>.
 
 TODO: YOUTUBE LINK GOES HERE.
 
 Script for a quick video demonstrating SQL injection and how it is enabled.
 
+## Format
+
+Normal text is to be spoken.
+
+> Quoted/indented text, like this, represents actions the presenter should execute.
+
 ## Prerequisites
 
 -   docker-compose
 -   docker
 
-```
-git clone https://github.com/HenryFBP/sqlinjection-training-app
-cd sqlinjection-training-app
-sudo docker-compose build
-sudo docker-compose up -d
-sudo docker-compose ps
-curl http://localhost:8000/resetdb.php
-curl http://localhost:8000
-xdg-open http://localhost:8000
-```
+    git clone https://github.com/HenryFBP/sqlinjection-training-app
+    cd sqlinjection-training-app
+    sudo docker-compose build
+    sudo docker-compose up -d
+    sudo docker-compose ps
+    curl http://localhost:8000/resetdb.php
+    curl http://localhost:8000
+    xdg-open http://localhost:8000
 
 > Get the prerequisites ready. 
 
@@ -44,7 +50,9 @@ You can see that the resulting query looks like a pretty simple SQL statement.
 
 But what if we try to escape the closing single quote after 'a'?
 
-> Put in [`a' OR 1=1 -- `] for a username. The ending space is important.
+> Put in [ `a' OR 1=1 -- ` ] for a username. The ending space is important.
+
+> Put in `b` for password. Submit.
 
 > Highlight the payload in the query, 
 
@@ -82,11 +90,11 @@ The injection occurs when `username` is allowed to enter a specific *context*, i
 
 By *context*, I mean a space where certain symbols mean very specific things.
 
-For example, we do not know if the symbol `'` [single quote] means "The beginning of a string literal", "The end of a string literal", or "The ASCII sequence 0x27" because the meaning of the single quote character, in any specific variant of SQL depends on characters preceding it. 
+For example, we do not know if the symbol `'` [single quote] means "The beginning of a string literal", "The end of a string literal", or "The character single quote, as data" because the meaning of the single quote character, in any specific variant of SQL depends on characters preceding it. 
 
 An initial thought that may cross your mind is, "The solution is simple! Just remove or encode single quotes!". This would be an example of a blocklist (a.k.a. blacklist) based approach to preventing SQL injection. This approach has failed reliably and should not be attempted.
 
-The blocklist approach is flawed for multiple reasons. One is that mixing user input with SQL is an issue that concerns the mixing of data and code, and it can be difficult or nearly impossible to fully evaluate all of the potential ways in which a blocklist can be circumvented, primarily because of the complexity of SQL syntax. 
+The blocklist approach is flawed for multiple reasons. One is that mixing user input with SQL is an issue that concerns the mixing of data and code, and it is nearly impossible to evaluate all of the potential ways in which a blocklist can be circumvented, because of the complexity of SQL syntax. 
 
 The best approach to preventing this is to use a SQL data binding technique called a "Prepared Statement" or a "Parameterized Query". These methods of creating SQL commands do not mix user input with SQL code, but rather, send the data separately from the code, so that the confusion of data and code is elimated.
 
@@ -108,14 +116,45 @@ Here is the code we saw in the previous example, but fixed. This is also availab
 
 You can see the string concatenation is gone, and rather, data is not mixed with the SQL code, but put into a construct separately.
 
-If you did not know how parameterized queries work, and saw the fixed code, you may be inclined to think that the database driver simply:
+If you did not know how parameterized queries work, and saw the fixed code, you may be inclined to think that the database driver either:
 
 1.  Uses string formatting with a complicated blocklist/allowlist (aka whitelist), i.e. `String.replace('?', myData)`, or
 2.  Uses an encoding scheme that encodes single quotes and other SQL control characters, i.e. parentheses and double quotes
 
+But this is not the case. 
 
-This is not the case. I want to reiterate: This is not how parameterized queries work. Data is not put into the SQL code, but sent separately from the SQL code.
+To summarize, with parameterized queries, user data is not put into the SQL code. Blocklists, allowlists, or encoding are not used, but the data is sent separately from the SQL code.
 
-## Attack 2: TODO
+## Attack 2: login2.php
 
-Now that we have a basic understanding of 
+Now that we have a basic understanding of SQL injection, let's look at a slightly modified query that defends against our original attack, but offers no defense other than that.
+
+> Navigate to <http://localhost:8000/login2.php?debug=true>.
+
+This login page looks identical, so let's just try our original payload.
+
+> Put in [ `a' OR 1=1 -- ` ] for a username. The ending space is important.
+
+> Put in `b` for a password. Submit.
+
+Looks like it failed. We get a syntax error instead of a successful injection.
+
+> Highlight the payload in the query.
+
+    SELECT * FROM users where (username='a' OR 1=1 -- ') AND (password = '0cc175b9c0f1b6a831c399e269772661')
+
+    SELECT * FROM users where (username='[a' OR 1=1 -- ]') AND (password = '0cc175b9c0f1b6a831c399e269772661')
+
+This fails because, even though we have a comment, dash-dash (`--`), injected, there is an opening paren that does not find its closing paren.
+
+> Note: 'paren' is the singular form of 'parentheses', a/k/a 'bracket'.
+
+The closing paren is AFTER the comment, (dash-dash), and gets ignored by the SQL parser.
+
+However, it is extremely easy to beat this new query. We only have to add a closing paren directly before the comment begins.
+
+> Update the payload so it looks like this: [`a' OR 1=1) -- `]. Note the ending space is required.
+
+> Submit again and enjoy being logged in.
+
+As in the previous example, the best way to fix this is not to ban parentheses or single quote characters, but to use parameterized queries.
