@@ -59,7 +59,7 @@ To understand why this happens, we must look at the code.
 
 Here, on line 67, we can see the following code:
 
-    $username = ($_REQUEST['uid']);
+    $username = $_REQUEST['uid'];
     $pass = md5($_REQUEST['password']);
 
     $q = "SELECT * FROM users where username='" . $username . "' AND password = '" . $pass . "'";
@@ -82,18 +82,32 @@ The blocklist approach is flawed for multiple reasons. One is that mixing user i
 
 The best approach to preventing this is to use a SQL data binding technique called a "Prepared Statement" or a "Parameterized Query". These methods of creating SQL commands do not mix user input with SQL code, but rather, send the data separately from the code, so that the confusion of data and code is elimated.
 
-Here is an example of the code we saw in the previous example, but fixed.
+Here is the code we saw in the previous example, but fixed. This is also available at this link: <https://github.com/HenryFBP/sqlinjection-training-app/blob/master/www/login1-fixed.php#L70>
 
-    $username = ($_REQUEST['uid']);
+    $username = $_REQUEST['uid'];
     $pass = md5($_REQUEST['password']);
-    $stmt = $db->prepare("SELECT * FROM users where username = ? AND password = ?");
-    $stmt->bind_param("s", $username); // 's' sets datatype as string
-    $stmt->bind_param("s", $pass); // 's' sets datatype as string
-    $stmt->execute();
+    $stmt = $db->prepare("SELECT username, fname FROM users where username = ? AND password = ?");
+    $stmt->bind_param("ss", $username, $pass); // 's' sets datatype as string, 2 's' for 2 parameters
+    $result = $stmt->execute(); // returns # of how many rows
+
+    if($result > 0) {
+        $stmt->bind_result($ret_username, $ret_fname);
+        $stmt->fetch();
+        echo "DEBUG: Returned '$ret_username', '$ret_fname'";
+    } else {
+        echo "DEBUG: No uname+pass matched."
+    }
+
+You can see the string concatenation is gone, and rather, data is not mixed with the SQL code, but put into a construct separately.
 
 If you did not know how parameterized queries work, and saw the fixed code, you may be inclined to think that the database driver simply:
 
-- Uses string formatting with a complicated blocklist/allowlist (aka whitelist), i.e. `String.replace('?', myData)`, or
-- Uses an encoding scheme that encodes single quotes and control characters
+1.  Uses string formatting with a complicated blocklist/allowlist (aka whitelist), i.e. `String.replace('?', myData)`, or
+2.  Uses an encoding scheme that encodes single quotes and other SQL control characters, i.e. parentheses and double quotes
 
-I want to reiterate: this is not how parameterized queries work. Data is not put into the SQL code itself, but sent separately from the SQL code.
+
+This is not the case. I want to reiterate: This is not how parameterized queries work. Data is not put into the SQL code, but sent separately from the SQL code.
+
+## Attack 2: TODO
+
+Now that we have a basic understanding of 
