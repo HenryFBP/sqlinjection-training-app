@@ -82,6 +82,8 @@ Here, on line 67, we can see the following code:
 
 For those of you unfamiliar with PHP syntax, the equivalent Java pseudocode is this:
 
+> Open `resources/java-login1-pseudocode.java`.
+
     String username = request.getParameter("username");
     String pass = request.getParameter("pass");
     String query = "SELECT * FROM users where username='" + username + "' AND password = '" + md5(pass) + "'";
@@ -91,6 +93,18 @@ The injection occurs when `username` is allowed to enter a specific *context*, i
 By *context*, I mean a space where certain symbols mean very specific things.
 
 For example, we do not know if the symbol `'` [single quote] means "The beginning of a string literal", "The end of a string literal", or "The character single quote, as data" because the meaning of the single quote character, in any specific variant of SQL depends on characters preceding it. 
+
+    The beginning of a string literal:
+                                     v
+    SELECT * FROM table WHERE name = 'data'
+
+    The end of a string literal:
+                                          v
+    SELECT * FROM table WHERE name = 'data'
+
+    As data itself:
+                                           v
+    SELECT * FROM table WHERE name = 'jack\'s back'
 
 An initial thought that may cross your mind is, "The solution is simple! Just remove or encode single quotes!". This would be an example of a blocklist (a.k.a. blacklist) based approach to preventing SQL injection. This approach has failed reliably and should not be attempted.
 

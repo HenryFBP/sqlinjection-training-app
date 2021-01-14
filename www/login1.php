@@ -67,7 +67,7 @@ ini_set('display_errors', 1);
 					$username = $_REQUEST['uid'];
 					$pass = md5($_REQUEST['password']);
 
-					$q = "SELECT * FROM users where username='" . $username . "' AND password = '" . $pass . "'";
+					$q = "SELECT * FROM users WHERE username='" . $username . "' AND password = '" . $pass . "'";
 
 					if (isset($_GET['debug'])) {
 						if ($_GET['debug'] == "true") {
