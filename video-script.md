@@ -51,7 +51,7 @@ We're logged in! But we didn't give a valid password.
 
 You can see that the payload is sandwiched between two single quotes.
 
-By injecting one single quote into our username, we were able to insert SQL code into the query and modify it to our advantage.
+By injecting one single quote into our username, we were able to insert SQL code into the query and modify it to our advantage. More specifically, we get logged in, because our attack causes the ResultSet obtained from the query to contain all rows in the database.
 
 To understand why this happens, we must look at the code.
 
