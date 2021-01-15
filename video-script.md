@@ -75,19 +75,24 @@ To understand why this happens, we must look at the code.
 
 Here, on line 67, we can see the following code:
 
-    $username = $_REQUEST['uid'];
-    $pass = md5($_REQUEST['password']);
+```php
 
-    $q = "SELECT * FROM users where username='" . $username . "' AND password = '" . $pass . "'";
+$username = $_REQUEST['uid'];
+$pass = md5($_REQUEST['password']);
+
+$q = "SELECT * FROM users where username='" . $username . "' AND password = '" . $pass . "'";
+
+```
 
 For those of you unfamiliar with PHP syntax, the equivalent Java pseudocode is this:
 
 > Open `resources/java-login1-pseudocode.java`.
 
-    String username = request.getParameter("username");
-    String pass = request.getParameter("pass");
-    String query = "SELECT * FROM users where username='" + username + "' AND password = '" + md5(pass) + "'";
-
+```java
+String username = request.getParameter("username");
+String pass = request.getParameter("pass");
+String query = "SELECT * FROM users where username='" + username + "' AND password = '" + md5(pass) + "'";
+```
 The injection occurs when `username` is allowed to enter a specific *context*, in this case, that context is SQL.
 
 By *context*, I mean a space where certain symbols mean very specific things.
@@ -114,19 +119,21 @@ The best approach to preventing this is to use a SQL data binding technique call
 
 Here is the code we saw in the previous example, but fixed. This is also available at this link: <https://github.com/HenryFBP/sqlinjection-training-app/blob/master/www/login1-fixed.php#L70>
 
-    $username = $_REQUEST['uid'];
-    $pass = md5($_REQUEST['password']);
-    $stmt = $db->prepare("SELECT username, fname FROM users where username = ? AND password = ?");
-    $stmt->bind_param("ss", $username, $pass); // 's' sets datatype as string, 2 's' for 2 parameters
-    $result = $stmt->execute(); // returns # of how many rows
+```php
+$username = $_REQUEST['uid'];
+$pass = md5($_REQUEST['password']);
+$stmt = $db->prepare("SELECT username, fname FROM users where username = ? AND password = ?");
+$stmt->bind_param("ss", $username, $pass); // 's' sets datatype as string, 2 's' for 2 parameters
+$result = $stmt->execute(); // returns # of how many rows
 
-    if($result > 0) {
-        $stmt->bind_result($ret_username, $ret_fname);
-        $stmt->fetch();
-        echo "DEBUG: Returned '$ret_username', '$ret_fname'";
-    } else {
-        echo "DEBUG: No uname+pass matched."
-    }
+if($result > 0) {
+    $stmt->bind_result($ret_username, $ret_fname);
+    $stmt->fetch();
+    echo "DEBUG: Returned '$ret_username', '$ret_fname'";
+} else {
+    echo "DEBUG: No uname+pass matched."
+}
+```
 
 You can see the string concatenation is gone, and rather, data is not mixed with the SQL code, but put into a construct separately.
 
@@ -157,9 +164,11 @@ Looks like it failed. We get a syntax error instead of a successful injection.
 
 > Highlight the payload in the query.
 
-    SELECT * FROM users where (username='a' OR 1=1 -- ') AND (password = '0cc175b9c0f1b6a831c399e269772661')
+```sql
+SELECT * FROM users where (username='a' OR 1=1 -- ') AND (password = '0cc175b9c0f1b6a831c399e269772661')
 
-    SELECT * FROM users where (username='[a' OR 1=1 -- ]') AND (password = '0cc175b9c0f1b6a831c399e269772661')
+SELECT * FROM users where (username='[a' OR 1=1 -- ]') AND (password = '0cc175b9c0f1b6a831c399e269772661')
+```
 
 This fails because, even though we have a comment, dash-dash (`--`), injected, there is an opening paren that does not find its closing paren.
 
@@ -185,8 +194,6 @@ As in the previous example, the best way to fix this is not to ban parentheses o
 This last attack details what could happen if your application is configured to display error messages to your users.
 
 The previous 2 attacks allowed us to log ourselves in, but that's about it. What if we actually wanted to retrieve data from the database?
-
-Suppose you're an attacker
 
 > Navigate to <http://localhost:8000/login1.php>. Not in debug mode.
 
@@ -215,7 +222,7 @@ The defense against this specific vulnerability could be one of two defenses:
 
 In summary, the only reliable way to defend against SQL injection is to use parameterized queries or prepared statements.
 
-You can use blocklists/allowlists, but there is always the chance that you've missed something, and that one well-crafted input could slip through.
+You can use blocklists/allowlists, but there is always the chance that you've missed something, and that one well-crafted input could slip through. Many SQL variants allow for a diverse range of encoding and escaping methods, and a failure to consider any of those could result in your blocklist/allowlist falling short of preventing SQL injection.
 
 All of these resources are available online, including this video's script, at the link shown on screen.
 
