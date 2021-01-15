@@ -224,7 +224,13 @@ In summary, the only reliable way to defend against SQL injection is to use para
 
 You can use blocklists/allowlists, but there is always the chance that you've missed something, and that one well-crafted input could slip through. Many SQL variants allow for a diverse range of encoding and escaping methods, and a failure to consider any of those could result in your blocklist/allowlist falling short of preventing SQL injection.
 
-All of these resources are available online, including this video's script, at the link shown on screen.
+In certain scenarios, parameterized queries actually cannot be used. In this situation, you may want to use allowlists, or encoding, and avoid blocklists unless absolutely necessary.
+
+Shown on screen is a link from OWASP that covers SQL injection prevention.
+
+<https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html>
+
+All of the resources shown in the video are available online, including this video's script, and some image resources, at the link shown on screen.
 
 <https://github.com/HenryFBP/sqlinjection-training-app/>
 
