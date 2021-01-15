@@ -2,7 +2,7 @@
 
 Adapted from <https://github.com/appsecco/sqlinjection-training-app>.
 
-TODO: YOUTUBE LINK GOES HERE.
+<https://www.youtube.com/watch?v=o7GODnWYYjE>
 
 Script for a quick video demonstrating SQL injection and how it is enabled.
 
