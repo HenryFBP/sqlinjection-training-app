@@ -2,6 +2,13 @@
 
 Adapted from <https://github.com/appsecco/sqlinjection-training-app>.
 
+I used:
+
+- OpenShot (It is genuinely painful to use for keyframes or splicing/positioning, please use DaVinci Resolve or kdenlive instead)
+- Audacity 
+- GIMP
+- Visual Studio Code
+
 <https://www.youtube.com/watch?v=o7GODnWYYjE>
 
 Script for a quick video demonstrating SQL injection and how it is enabled.
