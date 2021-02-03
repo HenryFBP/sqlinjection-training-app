@@ -1,5 +1,9 @@
 # Simple SQL Injection Training App
 
+## Changes
+
+In `docker-compose`, the port 3306 (MySQL) is not exposed. You can uncomment a line to expose that port.
+
 ## Introduction
 
 **This is an extremely vulnerable application. Please do not deploy in production or host it on the Internet. You are responsible for this application and what you do with it.**
