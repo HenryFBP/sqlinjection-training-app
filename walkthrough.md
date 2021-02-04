@@ -33,6 +33,12 @@ Depending on the SQL dialect, or using "Fragmented SQL injection", you can circu
 
     a'(\
 
+This is a fragmented payload that does NOT WORK, but could under certain conditions.
+
+    test\
+
+    and updatexml(null, concat(0x3a, version() ), null) -- limit 0,1
+
 ## Verbose SQL Error based Injection
 
 Forcing error conditions to reveal and extract data

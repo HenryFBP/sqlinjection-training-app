@@ -5,17 +5,52 @@ include("db_config.php");
 ini_set('display_errors', 1);
 
 // use a blocklist to remove dangerous characters
-$BAD_SQL_CHARS = array("'", '"', "(", ")");
+$BAD_SQL_CHARS = array("'", '"');
+// with this simpler blocklist, we can perform fragmented sql injection.
+// SELECT * from tbl_admin where username='\' and password=' and updatexml(null, concat(0x3a, version() ) ,null) -- -' limit 0,1
 
-function precode_block($s){
-	return "<pre><code>".$s."</code></pre>";
+
+
+//$BAD_SQL_CHARS = array("'", '"', "(", ")");
+
+function precode_block($s)
+{
+	return "<pre><code>" . $s . "</code></pre>";
 }
 
+function echoif($s, $b)
+{
+	if ($b) {
+		echo $s;
+	}
+}
 
+function blocklist_check($str, $blocklist)
+{
+	$i = 0;
+	foreach ($blocklist as $char) {
+
+		$found = false;
+		if (strpos($str, $char) != false) {
+			echo "Found character: '" . $char . "' in the following string: <br>";
+			echo precode_block($str) . "<br>";
+			$found = true;
+		}
+
+		$str = str_replace($char, "", $str);
+
+
+		if ($found) {
+			echo "Updated string: <br>";
+			echo precode_block($str) . "<br><br>";
+		}
+
+		$i = $i + 1;
+	}
+	return $str;
+}
 
 ?>
-
-
 
 <!-- Enable debug using ?debug=true" -->
 <html lang="en">
@@ -56,7 +91,8 @@ function precode_block($s){
 			<form method="POST" autocomplete="off">
 				<p style="color:white">
 					Username: <input type="text" id="uid" name="uid"><br /></br />
-					Password: <input type="password" id="password" name="password">
+					Password: <input type="password" id="password" name="password"><br /></br />
+					Third param: <input type="text" id="thirdparam" name="thirdparam">
 				</p>
 				<br />
 				<p>
@@ -78,6 +114,7 @@ function precode_block($s){
 				if (!empty($_REQUEST['uid'])) {
 					$username = $_REQUEST['uid'];
 					$pass = md5($_REQUEST['password']);
+					$thirdparam = $_REQUEST['thirdparam'];
 
 					echo "Using this blocklist to attempt to mitigate SQL injection: <br>";
 					echo "<pre><code>";
@@ -86,30 +123,11 @@ function precode_block($s){
 					}
 					echo "</code></pre>";
 
-
-					$i = 0;
-					foreach ($BAD_SQL_CHARS as $char) {
-						
-						$found = false;
-						if (strpos($username, $char) != false) {
-							echo "Found character: '".$char."' in the following string: <br>";
-							echo precode_block($username) . "<br>";
-							$found = true;
-						}
-
-						$username = str_replace($char, "", $username);
-						
-
-						if ($found) {
-							echo "Updated string: <br>";
-							echo precode_block($username) . "<br><br>";
-						}
-
-						$i = $i + 1;
-					}
+					$username = blocklist_check($username, $BAD_SQL_CHARS);
+					$thirdparam = blocklist_check($thirdparam, $BAD_SQL_CHARS);
 
 
-					$q = "SELECT * FROM users WHERE username='" . $username . "' AND password = '" . $pass . "'";
+					$q = "SELECT * FROM users WHERE username='" . $username . "' AND password = '" . $pass . "' AND '' = '" . $thirdparam . "'";
 
 					if (isset($_GET['debug'])) {
 						if ($_GET['debug'] == "true") {
