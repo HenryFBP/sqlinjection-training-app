@@ -10,18 +10,28 @@ Use the `register.php` to create users
 
 Bypassing login using boolean expressions
 
-**Page:** `login1.php`
+### `login1.php`
 
 **Attack:** 
    
 - `non-existent-user' OR 1=1 -- //`
 - `bob' -- //` 
 
-**Page:** `login2.php`
+### `login2.php`
 
 **Attack:** 
 
 - `voldemort') -- //`
+
+### `login1-blocklist.php`
+
+With a somewhat comprehensive blocklist, it is harder to perform SQLi.
+
+However, with a payload seen below (or just `a\`), you can cause an error to be thrown.
+
+Depending on the SQL dialect, or using "Fragmented SQL injection", you can circumvent blocklists.
+
+    a'(\
 
 ## Verbose SQL Error based Injection
 

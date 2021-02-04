@@ -51,8 +51,9 @@ ini_set('display_errors', 1);
           <h4><a href="register.php" style="color:#B31D14">register.php - user registration page</a></h4>
           <p>This page can be used to create users that will be used throughout the application.</p>
 
-          <h4><a href="login1.php" style="color:#B31D14">login1.php - basic injection page</a></h4>
-          <h4><a href="login1-fixed.php" style="color:green">login1-fixed.php - Fixed version of login1.php</a></h4>
+          <h4><a href="login1.php?debug=true" style="color:#B31D14">login1.php - basic injection page</a></h4>
+          <h4><a href="login1-blocklist.php?debug=true" style="color:blue">login1-blocklist.php - Flawed blocklist defense to mitigate SQLi</a></h4>
+          <h4><a href="login1-fixed.php?debug=true" style="color:green">login1-fixed.php - Fixed version of login1.php</a></h4>
           <p>This page contains the most simplistic form of SQL injection flaw. Verbose errors, can be used to enumerate columns and bypass user authentication altogether</p>
 
 
