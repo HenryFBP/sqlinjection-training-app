@@ -20,7 +20,7 @@ ini_set('display_errors', 1);
 
 		<div class="jumbotron">
 			<p class="lead" style="color:white">
-				Login Page 1 - Simple Login Bypass FIXED
+				Login Page 1 FIXED - Simple Login Bypass
 				<?php
 				if (!empty($_REQUEST['msg'])) {
 					if ($_REQUEST['msg'] === "1") {
@@ -74,7 +74,6 @@ ini_set('display_errors', 1);
 							$msg = "<div style=\"border:1px solid #4CAF50; padding: 10px\">" . $sql . "</div><br />";
 							echo $msg;
 						}
-
 					}
 					$stmt = $con->prepare($sql);
 					$stmt->bind_param("ss", $username, $pass);
@@ -82,17 +81,24 @@ ini_set('display_errors', 1);
 
 
 
-					echo "DEBUG: result = '$result'";
-					
+					echo "DEBUG: result = '$result'<br>";
+
 					if (!$result) {
 						echo 'Error: ' . mysqli_error($con);
 					} else {
 
 						$stmt->bind_result($returned_username, $returned_fname);
 
-						$stmt->fetch();
+						$fetch_result = $stmt->fetch();
 
-						echo "DEBUG: Fetch returns $returned_username, $returned_fname";
+
+						if ($fetch_result) {
+							echo "DEBUG: fetch_result is truth-y. This means there was a ResultSet.<br>";
+						} else {
+							echo "DEBUG: fetch_result is false-y. This means there was either not a ResultSet or there was an error.<br>";
+						}
+
+						echo "DEBUG: Fetch returns '$returned_username', '$returned_fname'<br>";
 
 						if (mysqli_warning_count($con)) {
 							$e = mysqli_get_warnings($con);
@@ -104,14 +110,14 @@ ini_set('display_errors', 1);
 						}
 
 						echo "<br /><br />";
-						$row = mysqli_fetch_array($result);
-						echo "DEBUG: Row = '$row'";
 
-						if ($row) {
+						if ($fetch_result) {
 							//$_SESSION["id"] = $row[0];
-							$_SESSION["username"] = $row[1];
-							$_SESSION["name"] = $row[3];
+							$_SESSION["username"] = $returned_username;
+							$_SESSION["name"] = $returned_fname;
 							//ob_clean();
+
+							echo "Welcome, " . $_SESSION['name']."!";
 
 							if ($_SESSION['next'] == "searchproducts.php") {
 								header('Location: searchproducts.php');
