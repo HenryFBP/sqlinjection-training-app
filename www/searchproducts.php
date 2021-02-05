@@ -35,7 +35,9 @@ function get_product_names_array($connection)
 <body>
 	<script>
 		function simulate_xss() {
-			alert('todo');
+			$('select').children.foreach(e, function(e){
+				console.log(e);
+			})
 		}
 	</script>
 
