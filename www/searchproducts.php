@@ -28,17 +28,33 @@ function get_product_names_array($connection)
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Search Products - SQL Injection Training App</title>
-
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<link href="./css/htmlstyles.css" rel="stylesheet">
 </head>
 
 <body>
 	<script>
-		function simulate_xss() {
-			$('select').children.foreach(e, function(e){
-				console.log(e);
-			})
-		}
+			//obfuscated version of the below "XSS" attack
+			function simulate_xss_obfuscated() {
+				eval(atob('CQkJCWNoaWxkcmVuID0gJCgnc2VsZWN0JykuY2hpbGRyZW4oKQoKCQkJCWZvciAobGV0IGkgPSAwOyBpIDwgY2hpbGRyZW4ubGVuZ3RoOyBpKyspIHsKCQkJCQljaGlsZCA9IGNoaWxkcmVuW2ldOwoJCQkJCWNvbnNvbGUubG9nKGNoaWxkKTsKCgkJCQkJY2hpbGQuc2V0QXR0cmlidXRlKCJ2YWx1ZSIsICQoJy5wYXlsb2FkJykudmFsKCkpOwoKCQkJCX0KCQkJCQoJCQkJJCgnLmRyb3Bkb3duLXN1Ym1pdC1idXR0b24nKS5hdHRyKCd2YWx1ZScsICdTZWFyY2ghIChpbmplY3RlZCknKQ=='));
+			}
+
+			function simulate_xss() {
+
+				children = $('select').children()
+
+				for (let i = 0; i < children.length; i++) {
+					child = children[i];
+					console.log(child);
+
+					child.setAttribute("value", $('.payload').val());
+
+				}
+				
+				$('.dropdown-submit-button').attr('value', 'Search! (injected)')
+
+			}
+		
 	</script>
 
 	<div class="container-narrow">
@@ -98,10 +114,7 @@ function get_product_names_array($connection)
 							</select>
 						</td>
 						<td>
-							<input type="submit" value="Search!" />
-						</td>
-						<td>
-							<button onclick="simulate_xss()">Simulate XSS</button>
+							<input type="submit" class="dropdown-submit-button" value="Search!" />
 						</td>
 					</tr>
 			</table>
@@ -111,6 +124,13 @@ function get_product_names_array($connection)
 			</form>
 		</div>
 
+		<div>
+			<button onclick="simulate_xss_obfuscated()">Simulate XSS</button>
+			<br>
+			SQLi payload to inject into all list items: (try this:) 
+			<pre><code>' or 1=1;-- //</code></pre>
+			<input type="text" class="payload"></input>
+		</div>
 
 		<br />
 

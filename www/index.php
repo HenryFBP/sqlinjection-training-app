@@ -60,7 +60,7 @@ ini_set('display_errors', 1);
           <h4><a href="login2.php" style="color:#B31D14">login2.php - basic injection page with brackets</a></h4>
           <p>This page contains the most simplistic form of SQL injection flaw. Verbose errors, can be used to enumerate columns and bypass user authentication altogether. Backend query uses brackets to enclose variables. Very common on the Internet.</p>
 
-          <h4><a href="searchproducts.php" style="color:#B31D14">searchproducts.php - multiple exercises</a></h4>
+          <h4><a href="searchproducts.php?debug=true" style="color:#B31D14">searchproducts.php - multiple exercises</a></h4>
           <p>Page contains code that fetches multiple entries from the DB, can be abused to extract arbitrary data</p>
 
           <h4><a href="secondorder_register.php" style="color:#B31D14">secondorder_register.php - allows registration with quotes</a></h4>
