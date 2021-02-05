@@ -49,6 +49,37 @@ ini_set('display_errors', 1);
 
 			</form>
 		</div>
+		<div class="response">
+
+			<p style="color:white">
+			<table class="response">
+				<form method="POST" autocomplete="off">
+
+					<tr>
+						<td>
+							Search for a product using drop-down:
+
+							TODO: Pull a list from the database
+
+						</td>
+						<td>
+							<select name="searchitem">
+								<option value="a">a</option>
+							</select>
+						</td>
+						<td>
+							<input type="submit" value="Search!" />
+						</td>
+						<td>
+							<button onclick="alert('todo')">Simulate XSS</button>
+						</td>
+					</tr>
+			</table>
+
+			</p>
+
+			</form>
+		</div>
 
 
 		<br />
