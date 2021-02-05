@@ -6,6 +6,21 @@ if (!$_SESSION["username"]) {
 	header('Location:login1.php?msg=1');
 }
 ini_set('display_errors', 1);
+
+function get_product_names_array($connection)
+{
+	$list_of_products = array();
+
+	$q = "SELECT product_name FROM products";
+
+	$result = mysqli_query($connection, $q);
+	while ($row = mysqli_fetch_array($result)) {
+		array_push($list_of_products, $row[0]);
+	}
+
+	return $list_of_products;
+}
+
 ?>
 <!-- Enable debug using ?debug=true" -->
 <html lang="en">
@@ -18,6 +33,12 @@ ini_set('display_errors', 1);
 </head>
 
 <body>
+	<script>
+		function simulate_xss() {
+			alert('todo');
+		}
+	</script>
+
 	<div class="container-narrow">
 
 		<div class="jumbotron">
@@ -58,20 +79,27 @@ ini_set('display_errors', 1);
 					<tr>
 						<td>
 							Search for a product using drop-down:
-
-							TODO: Pull a list from the database
-
 						</td>
 						<td>
 							<select name="searchitem">
-								<option value="a">a</option>
+
+								<?php
+								$products = get_product_names_array($con);
+
+								foreach ($products as $product) {
+									echo "<option value='" . $product . "'>" . $product . "</option>\n";
+								}
+
+								?>
+
+								<option value="test">test</option>
 							</select>
 						</td>
 						<td>
 							<input type="submit" value="Search!" />
 						</td>
 						<td>
-							<button onclick="alert('todo')">Simulate XSS</button>
+							<button onclick="simulate_xss()">Simulate XSS</button>
 						</td>
 					</tr>
 			</table>
