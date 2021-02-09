@@ -2,6 +2,11 @@
 
 This document explains the different attacks that can be done on this setup. Use `?debug=true` to see the actual query being executed.
 
+## Sample SQLi
+
+-     ' UNION SELECT * FROM users -- //
+-     ' OR 1=1 -- //`
+
 ## Registration
 
 Use the `register.php` to create users
