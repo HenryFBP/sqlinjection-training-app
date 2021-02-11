@@ -41,7 +41,7 @@ Normal text is to be spoken.
 
 ## Intro
 
-Hi everyone. This video showcases some simple and more complex SQL injection attacks using a vulnerable PHP application.
+Hi everyone. This presentation showcases some simple and more complex SQL injection attacks using a vulnerable PHP application.
 
 We'll first execute an attack, and then dissect why the attack was successful by analyzing the source code.
 
@@ -202,13 +202,103 @@ As in the previous example, the best way to fix this is not to ban parentheses o
 
 We saw in the previous two attacks that an attacker intentionally modifying field values could execute SQLi attacks. What if it was possible for a regular user to accidentally facilitate an SQLi attack?
 
-With cross-site scripting, TODO
+With cross-site scripting, even things like cookie values could cause XSS payloads to be executed by users who are unaware of the attack.
+
+> Navigate to <http://localhost:8000/searchproducts.php?debug=true>
+
+In this page, we have a few places user input is used.
+
+One place is the search box, and the other is the drop-down box.
+
+Let's put `a` in the search box and see what happens.
+
+> Put `a` in the search box. Click "Search!"
+
+Looks like the SQL is built without parameterization, so a payload like this:
+
+> Paste the payload into the search box.
+
+    ' or 1=1;-- //
+
+Should be able to cause SQLi.
+
+> Click "Search!"
+
+I'm not going to go into exploiting this specific box further, but demonstrate what XSS could look like in an application.
+
+This button, "Simulate XSS in drop-down", will inject a value into every list item to simulate how an XSS attack could facilitate an SQL injection attack.
+
+For example, if we put `a` into the input field,
+
+> Put `a` into the XSS input. Click "Simulate XSS".
+
+> Inspect Element (CTRL-SHIFT-C) on the drop-down.
+
+We can see that every value tag of the `<option>` elements gets changed to `a`.
+
+When we go to search,
+
+> Click "Search! (injected)
+
+Our query returns things starting with "A".
+
+We can put the same payload into this, to simulate what effect XSS would have on our application. I'm not going to do this, but you get what effect a successful XSS attack could have on the DOM.
+
+I'm going to now move onto SQL injection facilitated by cookies.
+
+At the top, you can see a "welcome banner" in light pink.
+
+This "welcome banner" comes from a cookie, which I will show you.
+
+> Open the cookies view and show the cookie.
+
+In fact, I can change this value to show a different message.
+
+> Change the cookie `welcome-banner`'s value to `hello world!`. Refresh page.
+
+We can see the value is different now.
+
+If we were to change this cookie value to a payload that modifies the DOM, then we could cause XSS to take place, which would enable SQL injection.
+
+I'm going to show you the payload and explain what happens to the DOM before I execute the attack, as the payload may look complicated.
+
+> Show the below payload. Talk about it freely.
+
+Points
+- Closing the p tag
+- Adding a script tag
+- Changing the option element's value to an SQLi payload
+
+
+```html
+I'm a payload!</p><script>$('option')[0].value="' OR 1=1; -- //"; alert("success!");</script><p>
+```
+
+Now, I'm going to set the cookie value to this. In a real setting, an attacker may try to set a user's cookie value through a number of means, but XSS is the primary way.
+
+The payload I'm using is percent-encoded so that no invalid cookie characters like spaces, semicolons, etc; get used.
+
+```
+I'm%20a%20payload!</p><script>$('option')[0].value=%22'%20OR%201=1%3B%20--%20//%22%3B%20alert(%22success!%22)%3B</script><p>
+````
+
+> Change the cookie `welcome-banner`'s value to the percent-encoded cookie. Refresh page.
+
+You can see the alert popped up, so our code executed.
+
+> Inspect element on the 1st `<option>` element.
+
+And we can also see that our payload is in this `<option>` element. It's impossible to tell, from a user's perspective, that anything has gone wrong. Let's select this first option and use it to search.
+
+> Select the first option and search with it.
+
+And our SQLi payload has been executed.
 
 ## Attack 3 - Verbose SQL Error based Injection
 
 This last attack details what could happen if your application is configured to display error messages to your users.
 
-The previous 2 attacks allowed us to log ourselves in, but that's about it. What if we actually wanted to retrieve data from the database?
+The previous attacks allowed us to log ourselves in, and select extra rows, but that's about it. What if we actually wanted to retrieve data from the database?
 
 > Navigate to <http://localhost:8000/login1.php>. Not in debug mode.
 
