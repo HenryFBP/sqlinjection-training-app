@@ -34,6 +34,9 @@ function get_product_names_array($connection)
 
 <body>
 	<script>
+
+			$('jumbotron').append($('<p>').append("Welcome!"))
+
 			//obfuscated version of the below "XSS" attack
 			function simulate_xss_obfuscated() {
 				eval(atob('CQkJCWNoaWxkcmVuID0gJCgnc2VsZWN0JykuY2hpbGRyZW4oKQoKCQkJCWZvciAobGV0IGkgPSAwOyBpIDwgY2hpbGRyZW4ubGVuZ3RoOyBpKyspIHsKCQkJCQljaGlsZCA9IGNoaWxkcmVuW2ldOwoJCQkJCWNvbnNvbGUubG9nKGNoaWxkKTsKCgkJCQkJY2hpbGQuc2V0QXR0cmlidXRlKCJ2YWx1ZSIsICQoJy5wYXlsb2FkJykudmFsKCkpOwoKCQkJCX0KCQkJCQoJCQkJJCgnLmRyb3Bkb3duLXN1Ym1pdC1idXR0b24nKS5hdHRyKCd2YWx1ZScsICdTZWFyY2ghIChpbmplY3RlZCknKQ=='));
