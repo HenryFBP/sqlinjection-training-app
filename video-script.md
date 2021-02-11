@@ -118,9 +118,11 @@ For example, we do not know if the symbol `'` [single quote] means "The beginnin
                                            v
     SELECT * FROM table WHERE name = 'jack\'s back'
 
-An initial thought that may cross your mind is, "The solution is simple! Just remove or encode single quotes!". This would be an example of a blocklist (a.k.a. blacklist) based approach to preventing SQL injection. This approach has failed reliably and should not be attempted.
+You may think that removing or encoding single quotes would fully prevent SQLi. This would be an example of a blocklist (a.k.a. blacklist) based approach to preventing SQL injection. This approach has failed many times and should not be attempted. This approach is flawed for multiple reasons. 
 
-The blocklist approach is flawed for multiple reasons. One is that mixing user input with SQL is an issue that concerns the mixing of data and code, and it is nearly impossible to evaluate all of the potential ways in which a blocklist can be circumvented, because of the complexity of SQL syntax. 
+One is that mixing user input with SQL is an issue that concerns the mixing of data and code. A blocklist does not fully separate these two different objects, but tries to sanitize the user input before it gets mixed in with data.
+
+The other reason is that it is nearly impossible to evaluate all of the potential ways in which a blocklist can be circumvented, because of the complexity of SQL syntax. There are many different ways of creating a blocklist, and most of them can fail or have flaws. 
 
 The best approach to preventing this is to use a SQL data binding technique called a "Prepared Statement" or a "Parameterized Query". These methods of creating SQL commands do not mix user input with SQL code, but rather, send the data separately from the code, so that the confusion of data and code is elimated.
 
@@ -195,6 +197,12 @@ However, it is extremely easy to beat this new query. We only have to add a clos
 > Submit again and enjoy being logged in.
 
 As in the previous example, the best way to fix this is not to ban parentheses or single quote characters, but to use parameterized queries.
+
+## Attack 2.5 - XSS simulation
+
+We saw in the previous two attacks that an attacker intentionally modifying field values could execute SQLi attacks. What if it was possible for a regular user to accidentally facilitate an SQLi attack?
+
+With cross-site scripting, TODO
 
 ## Attack 3 - Verbose SQL Error based Injection
 
