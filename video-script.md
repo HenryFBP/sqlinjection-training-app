@@ -47,7 +47,7 @@ Before we begin, here's a bit of background about the SQL injection vulnerabilit
 
 Injection is the most common vulnerability in the OWASP Top Ten, a list of ten vulnerability categories that affect the largest number of web applications. OWASP stands for Open Web Application Security Project.
 
-SQL injection is a vulnerability with a very high severity and impact, as it could be described as arbitrary code execution that occurs in the database. It could be leveraged to exfiltrate or delete any data within the database, given the right conditions.
+SQL injection is a vulnerability with a very high severity and impact, as it could be described as arbitrary code execution that occurs in the database. It could be leveraged to exfiltrate, modify, or delete any data within the database, given the right conditions.
 
 As a vulnerability with a very high severity, it is a popular target for attackers and this is likely why it is number one on the OWASP Top Ten.
 
