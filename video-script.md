@@ -200,9 +200,14 @@ Looks like it failed. We get a syntax error instead of a successful injection.
 > Highlight the payload in the query.
 
 ```sql
+SELECT * FROM users where (username='.............') AND (password = '0cc175b9c0f1b6a831c399e269772661')
+
+--                                   a' OR 1=1 -- 
+
 SELECT * FROM users where (username='a' OR 1=1 -- ') AND (password = '0cc175b9c0f1b6a831c399e269772661')
 
-SELECT * FROM users where (username='[a' OR 1=1 -- ]') AND (password = '0cc175b9c0f1b6a831c399e269772661')
+SELECT * FROM users where (username='a' OR 1=1
+-- Syntax error!
 ```
 
 This fails because, even though we have a comment, dash-dash (`--`), injected, there is an opening paren that does not find its closing paren.
