@@ -75,10 +75,17 @@ It looks like our username is inserted directly in-between two single quote char
 
 > Highlight the payload in the query, 
 
-    SELECT * FROM users where username='a' OR 1=1 -- ' AND password = '098f6bcd4621d373cade4e832627b4f6'
+```sql
+SELECT * FROM users where username='.............' AND password = '098f6bcd4621d373cade4e832627b4f6'
 
-    SELECT * FROM users where username='[a' OR 1=1 -- ]' AND password = '098f6bcd4621d373cade4e832627b4f6'
+--                                  a' OR 1=1 -- 
 
+SELECT * FROM users where username='a' OR 1=1 -- ' AND password = '098f6bcd4621d373cade4e832627b4f6'
+
+SELECT * FROM users where <TRUE>
+
+SELECT * FROM users
+```
 
 Our attack was successful. We're logged in, even though we didn't give a valid password.
 
@@ -95,12 +102,10 @@ To understand why this happens, we must look at the code.
 Here, on line 67, we can see the following code:
 
 ```php
-
 $username = $_REQUEST['uid'];
 $pass = md5($_REQUEST['password']);
 
 $q = "SELECT * FROM users where username='" . $username . "' AND password = '" . $pass . "'";
-
 ```
 
 For those of you unfamiliar with PHP syntax, the equivalent Java pseudocode is this:
@@ -110,25 +115,29 @@ For those of you unfamiliar with PHP syntax, the equivalent Java pseudocode is t
 ```java
 String username = request.getParameter("username");
 String pass = request.getParameter("pass");
+
 String query = "SELECT * FROM users where username='" + username + "' AND password = '" + md5(pass) + "'";
 ```
+
 The injection occurs when `username` is allowed to enter a specific *context*, in this case, that context is SQL.
 
 By *context*, I mean a space where certain symbols mean very specific things.
 
 For example, we do not know if the symbol `'` [single quote] means "The beginning of a string literal", "The end of a string literal", or "The character single quote, as data" because the meaning of the single quote character, in any specific variant of SQL depends on characters preceding it. 
 
-    The beginning of a string literal:
-                                     v
-    SELECT * FROM table WHERE name = 'O'Reilly'
+```
+The beginning of a string literal:
+                                    v
+SELECT * FROM table WHERE name = 'O'Reilly'
 
-    The end of a string literal:
-                                              v
-    SELECT * FROM table WHERE name = 'O'Reilly'
+The end of a string literal:
+                                            v
+SELECT * FROM table WHERE name = 'O'Reilly'
 
-    As data itself:
-                                       v
-    SELECT * FROM table WHERE name = 'O'Reilly'
+As data itself:
+                                    v
+SELECT * FROM table WHERE name = 'O'Reilly'
+```
 
 You may think that removing or encoding single quotes would fully prevent SQLi. This would be an example of a blocklist (a.k.a. blacklist) based approach to preventing SQL injection. This approach has failed many times and should not be attempted. This approach is flawed for multiple reasons. 
 
@@ -145,8 +154,11 @@ Here is the code we saw in the previous example, but fixed. This is also availab
 ```php
 $username = $_REQUEST['uid'];
 $pass = md5($_REQUEST['password']);
+
 $stmt = $db->prepare("SELECT username, fname FROM users where username = ? AND password = ?");
+
 $stmt->bind_param("ss", $username, $pass); // 's' sets datatype as string, 2 's' for 2 parameters
+
 $result = $stmt->execute(); // returns # of how many rows
 
 if($result > 0) {
@@ -162,12 +174,12 @@ You can see the string concatenation is gone, and rather, data is not mixed with
 
 If you did not know how parameterized queries work, and saw the fixed code, you may be inclined to think that the database driver either:
 
-1.  Uses string formatting with a complicated blocklist/allowlist (aka whitelist), i.e. `String.replace('?', myData)`, or
-2.  Uses an encoding scheme that encodes single quotes and other SQL control characters, i.e. parentheses and double quotes
+1.  Uses string formatting with a complicated blocklist/allowlist (aka whitelist), and then replaces the question mark characters with the data, or
+2.  Uses an encoding scheme that encodes single quotes and other SQL control characters, like parentheses and double quotes, and then replaces the question mark characters with the data.
 
 But this is not the case. 
 
-To summarize, with parameterized queries, user data is not put into the SQL code. Blocklists, allowlists, or encoding are not used, but the data is sent separately from the SQL code.
+To summarize, with parameterized queries, user data is not put into the SQL code. Blocklists, allowlists, or encoding are not used, but the data is sent separately from the SQL code to the database.
 
 ## Attack 2 - Slightly different: login2.php
 
