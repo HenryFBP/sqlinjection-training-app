@@ -120,21 +120,23 @@ For example, we do not know if the symbol `'` [single quote] means "The beginnin
 
     The beginning of a string literal:
                                      v
-    SELECT * FROM table WHERE name = 'data'
+    SELECT * FROM table WHERE name = 'O'Reilly'
 
     The end of a string literal:
-                                          v
-    SELECT * FROM table WHERE name = 'data'
+                                              v
+    SELECT * FROM table WHERE name = 'O'Reilly'
 
     As data itself:
-                                           v
-    SELECT * FROM table WHERE name = 'jack\'s back'
+                                       v
+    SELECT * FROM table WHERE name = 'O'Reilly'
 
 You may think that removing or encoding single quotes would fully prevent SQLi. This would be an example of a blocklist (a.k.a. blacklist) based approach to preventing SQL injection. This approach has failed many times and should not be attempted. This approach is flawed for multiple reasons. 
 
 One is that mixing user input with SQL is an issue that concerns the mixing of data and code. A blocklist does not fully separate these two different objects, but tries to sanitize the user input before it gets mixed in with data.
 
 The other reason is that it is nearly impossible to evaluate all of the potential ways in which a blocklist can be circumvented, because of the complexity of SQL syntax. There are many different ways of creating a blocklist, and most of them can fail or have flaws. 
+
+One additional reason is that certain types of data (such as single quotes) may get removed or transformed in unintended ways, and this can negatively affect the behavior of the application. One example is a user whose first name is "O'Reilly" having the single quote removed from their name.
 
 The best approach to preventing this is to use a SQL data binding technique called a "Prepared Statement" or a "Parameterized Query". These methods of creating SQL commands do not mix user input with SQL code, but rather, send the data separately from the code, so that the confusion of data and code is elimated.
 
